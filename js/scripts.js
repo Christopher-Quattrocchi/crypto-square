@@ -1,78 +1,76 @@
-function inputFunction(initialString) {
-  let lowerString = initialString.toLowerCase();
-  let cleanString = lowerString.replace(/[^a-z]/gi, '');
-  console.log("This is the cleaned up string" + cleanString);
-  console.log("The length of the string is:" + cleanString.length)
-  let rowColObj = squareBuilder(cleanString);
-  console.log("The square needs rows:" + rowColObj.rows + " and columns: " + rowColObj.columns);
+//UI Logic
+window.addEventListener("load", function() {
+  document.querySelector("form#input-form").addEventListener("submit", inputFunction);
+})
+
+function inputFunction(event) {
+  event.preventDefault();
+  const initialString = document.getElementById("input-text").value;
+  const lowerString = initialString.toLowerCase();
+  const cleanString = lowerString.replace(/[^a-z]/gi, '');
+  const rowColObj = rowColFinder(cleanString);
+  const rows = rowColObj.rows;
+  const columns = rowColObj.columns;
+  const cryptoArray = squareBuilder(rows, columns, cleanString);
+  const outputString = squareReader(cryptoArray, rows, columns);
+  const finalString = addSpaces(outputString);
+  outputFunction(finalString);
 }
 
+function outputFunction(finalString) {
+  pEle = document.createElement("p");
+  outputDiv = document.getElementById("output-div");
+  pEle.append(finalString);
+  document.querySelector("div#output-div").innerHTML = "";
+  outputDiv.append(pEle);
+}
 
-
-function squareBuilder(cleanString) {
-  let length = cleanString.length;
-
+//Business Logic
+function rowColFinder(cleanString) {
+  const length = cleanString.length;
   if (length === 0) {
     return "Please enter some text";
   }
-
-  let columns = Math.ceil(Math.sqrt(length));
+  const columns = Math.ceil(Math.sqrt(length));
   console.log(columns);
-  let rows = Math.ceil(length / columns);
+  const rows = Math.ceil(length / columns);
   console.log(rows);
-
   return {
     rows: rows,
     columns: columns
   };
 }
 
+function squareBuilder(rows, columns, cleanString) {
+  let cryptoArray = [];
+  for (let i = 0; i < rows; i++) {
+    let innerArray = [];
+    for (let j = 0; j < columns; j++) {
+      innerArray.push(cleanString[(i * columns) + j]);
+    }
+    cryptoArray.push(innerArray);
+  }
+  return cryptoArray;
+}
 
-// function squareBuilder(cleanString) {
-//   if (cleanString <= 1) {
-//     square of 1
-//   } else if (cleanString.length <= 4) {
-//     square of 4 2*2
-//   } else if (cleanString.length <= 6) {
-//     rectangle of 6 2*3
-//   } else if (cleanString.length <= 9) {
-//     square of 9 3*3
-//   } else if (cleanString.length <= 12) {
-//     rectangle of 12 3*4
-//   } else if (cleanString.length <= 16) {
-//     square of 16 4*4
-//   } else if (cleanString.length <= 20) {
-//     rectangle of 20 4*5
-//   } else if (cleanString.length <= 25) {
-//     square of 25 5*5
-//   } else if (cleanString.length <= 30) {
-//     rectangle of 30 5*6
-//   } else if (cleanString.length <= 36) {
-//     square of 36 6*6
-//   } else if (cleanString.length <= 42) {
-//     rectangle of 42 6*7
-//   } else if (cleanString.length <= 49) {
-//     square of 49 7*7
-//   } else if (cleanString.length <= 56) {
-//     rectangle of 56 7*8
-//   } else if (cleanString.length <= 64) {
-//     square of 64 8*8
-//   } else if (cleanString.length <= 72) {
-//     rectangle of 72 7*8
-//   } else if (cleanString.length <= 81) {
-//     square of 81 9*9
-//   } else if (cleanString.length <= 90) {
-//     rectangle of 90 9*10
-//   } else if (cleanString.length <= 100) {
-//     square of 100 10*10
-//   } else if (cleanString.length <= 110) {
-//     rectangle of 110 10*11
-//   } else if (cleanString.length <= 121) {
-//     square of 121 11*11
-//   } else {
-//     return "Too big, c'mon man";
-//   }
-// }
-// Squares: [1:1] [2:4] [3:9] [4:16] [5:25] [6:36] [7:49] [8:64] [9:81] [10:100] [11:121]
+function squareReader(cryptoArray, rows, columns) {
+  let outputString = "";
+  for (let j = 0; j < columns; j++) {
+    for (let i = 0; i < rows; i++) {
+      outputString += cryptoArray[i][j];
+    }
+  }
+  return outputString;
+}
 
-// Rectangles: [2*3:6] [3*4:12] [4*5:20] [5*6:30] [6*7:42] [7*8:56] [8*9:72] [9*10:90] [10*11:110]
+function addSpaces(outputString) {
+  let noUndefinedStr = outputString.replace(/undefined/g, "");
+  let splitArray = [];
+  for (let i = 0; i < noUndefinedStr.length; i += 5) {
+    let chunk = noUndefinedStr.slice(i, i + 5);
+    splitArray.push(chunk);
+  }
+  let finalString = splitArray.join(" ");
+  return finalString;
+}
+
